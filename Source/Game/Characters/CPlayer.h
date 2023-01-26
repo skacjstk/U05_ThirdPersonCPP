@@ -13,12 +13,22 @@ public:
 	ACPlayer();
 
 private:
+	// SceneComponent
 	UPROPERTY(VisibleDefaultsOnly)
 		class USpringArmComponent* SpringArm;
 
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCameraComponent* Camera;
-
+	// ActorComponent
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCStatusComponent* Status;
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCOptionComponent* Option;
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCStateComponent* State;
+	UPROPERTY(VisibleDefaultsOnly)
+	class UCMontagesComponent* Montages;
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -31,4 +41,5 @@ private:
 	void OnMoveRight(float InAxis);
 	void OnHorizontalLook(float InAxis);
 	void OnVerticalLook(float InAxis);
+	void OnZoom(float InAxis);
 };
