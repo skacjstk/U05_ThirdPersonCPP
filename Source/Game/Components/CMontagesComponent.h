@@ -40,7 +40,9 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-		
+	void PlayRoll();
+	void PlayBackStep();
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "DataTable")
 		UDataTable* DataTable;

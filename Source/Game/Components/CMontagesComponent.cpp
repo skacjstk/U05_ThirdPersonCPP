@@ -13,6 +13,7 @@ UCMontagesComponent::UCMontagesComponent()
 }
 
 
+
 // Called when the game starts
 void UCMontagesComponent::BeginPlay()
 {
@@ -34,8 +35,16 @@ void UCMontagesComponent::BeginPlay()
 			}
 		}//end for
 	}//end for	
+}
 
+void UCMontagesComponent::PlayRoll()
+{
+	PlayAnimMontage(EStateType::Roll);
+}
 
+void UCMontagesComponent::PlayBackStep()
+{
+	PlayAnimMontage(EStateType::BackStep);
 }
 
 void UCMontagesComponent::PlayAnimMontage(EStateType InType)

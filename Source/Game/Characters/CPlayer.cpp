@@ -3,9 +3,9 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CStatusComponent.h"
-#include "Components/CStateComponent.h"
 #include "Components/COptionComponent.h"
 #include "Components/CMontagesComponent.h"
+#include "Components/CActionComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 ACPlayer::ACPlayer()
@@ -21,6 +21,7 @@ ACPlayer::ACPlayer()
 	CHelpers::CreateActorComponent(this, &Option, "Option");
 	CHelpers::CreateActorComponent(this, &State, "State");
 	CHelpers::CreateActorComponent(this, &Montages, "Montages");
+	CHelpers::CreateActorComponent(this, &Action, "Action");
 
 	// Component Settings
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
@@ -56,6 +57,7 @@ void ACPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	State->OnStateTypeChanged.AddDynamic(this, &ACPlayer::OnStateTypeChanged);	// 상태 등록
 
 }
 
@@ -74,6 +76,14 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("HorizontalLook", this, &ACPlayer::OnHorizontalLook);
 	PlayerInputComponent->BindAxis("VerticalLook", this, &ACPlayer::OnVerticalLook);
 	PlayerInputComponent->BindAxis("Zoom", this, &ACPlayer::OnZoom);
+
+	PlayerInputComponent->BindAction("Evade", EInputEvent::IE_Pressed, this, &ACPlayer::OnEvade);
+	PlayerInputComponent->BindAction("Walk", EInputEvent::IE_Pressed, this, &ACPlayer::OnWalk);
+	PlayerInputComponent->BindAction("Walk", EInputEvent::IE_Released, this, &ACPlayer::OffWalk);
+
+	PlayerInputComponent->BindAction("Fist", EInputEvent::IE_Pressed, this, &ACPlayer::OnFist);
+	PlayerInputComponent->BindAction("OneHand", EInputEvent::IE_Pressed, this, &ACPlayer::OnOneHand);
+	PlayerInputComponent->BindAction("TwoHand", EInputEvent::IE_Pressed, this, &ACPlayer::OnTwoHand);
 
 }
 
@@ -114,5 +124,89 @@ void ACPlayer::OnZoom(float InAxis)
 {
 	SpringArm->TargetArmLength += Option->GetZoomSpeed()* InAxis* GetWorld()->GetDeltaSeconds();
 	SpringArm->TargetArmLength = FMath::Clamp(SpringArm->TargetArmLength, Option->GetZoomRange().X, Option->GetZoomRange().Y);
+}
+
+void ACPlayer::OnEvade() {
+
+	CheckFalse(State->IsIdleMode());
+	CheckFalse(Status->IsCanMove());
+
+	if (InputComponent->GetAxisValue("MoveForward") < 0.f)
+	{
+		State->SetBackStepMode();
+		return;
+	}
+	State->SetRollMode();
+}
+
+void ACPlayer::OnWalk()
+{
+	GetCharacterMovement()->MaxWalkSpeed = Status->GetWalkSpeed();
+}
+
+void ACPlayer::OffWalk()
+{
+	GetCharacterMovement()->MaxWalkSpeed = Status->GetRunSpeed();
+}
+
+void ACPlayer::OnFist()
+{
+	CheckFalse(State->IsIdleMode()); 
+	Action->SetFistMode();
+}
+
+void ACPlayer::OnOneHand()
+{
+	CheckFalse(State->IsIdleMode());
+	Action->SetOneHandMode();
+}
+
+void ACPlayer::OnTwoHand()
+{
+	CheckFalse(State->IsIdleMode());
+	Action->SetTwoHandMode();
+}
+
+void ACPlayer::Begin_Roll()
+{
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	FVector start = GetActorLocation();
+	FVector end = start + GetVelocity().GetSafeNormal2D();
+
+	SetActorRotation(UKismetMathLibrary::FindLookAtRotation(start, end));
+	// 바라보는 방향을 강제로 변경 
+	Montages->PlayRoll();
+}
+
+void ACPlayer::Begin_BackStep()
+{
+	bUseControllerRotationYaw = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+	Montages->PlayBackStep();
+}
+
+void ACPlayer::End_Roll()
+{
+	State->SetIdleMode();
+}
+
+void ACPlayer::End_BackStep()
+{
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	State->SetIdleMode(); 
+}
+
+void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
+{
+	switch (InNewType)
+	{
+	case EStateType::Roll:			Begin_Roll();			break;
+	case EStateType::BackStep:		Begin_BackStep();		break;
+	default:
+		break;
+	}
 }
 
