@@ -59,5 +59,8 @@ public:
 		FActionTypeChanged OnActionTypeChanged;
 private:
 	EActionType Type;
+private:
+	UPROPERTY(EditDefaultsOnly)
+		class UCActionData* Datas[(int32)EActionType::Max];	// 실제 눈에 보이는 데이터: 세팅값 포함 
 
 };

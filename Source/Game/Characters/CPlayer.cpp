@@ -17,11 +17,11 @@ ACPlayer::ACPlayer()
 	CHelpers::CreateSceneComponent(this, &Camera, "Camera", SpringArm);
 
 	// CreateActorComponent
+	CHelpers::CreateActorComponent(this, &Action, "Action");
+	CHelpers::CreateActorComponent(this, &Montages, "Montages");
 	CHelpers::CreateActorComponent(this, &Status, "Status");
 	CHelpers::CreateActorComponent(this, &Option, "Option");
 	CHelpers::CreateActorComponent(this, &State, "State");
-	CHelpers::CreateActorComponent(this, &Montages, "Montages");
-	CHelpers::CreateActorComponent(this, &Action, "Action");
 
 	// Component Settings
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
@@ -58,6 +58,8 @@ void ACPlayer::BeginPlay()
 	Super::BeginPlay();
 	
 	State->OnStateTypeChanged.AddDynamic(this, &ACPlayer::OnStateTypeChanged);	// 상태 등록
+
+	Action->SetUnarmedMode();
 
 }
 

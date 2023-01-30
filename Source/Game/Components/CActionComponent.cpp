@@ -1,4 +1,8 @@
 #include "CActionComponent.h"
+#include "Global.h"
+#include "Actions/CEquipment.h"
+#include "Actions/CActionData.h"
+#include "GameFramework/Character.h"
 
 UCActionComponent::UCActionComponent()
 {
@@ -10,10 +14,21 @@ UCActionComponent::UCActionComponent()
 void UCActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	ACharacter* charcater = Cast<ACharacter>(GetOwner());
+	for (int i = 0; i < (int32)EActionType::Max; ++i)
+	{
+		if(!!Datas[i])
+			Datas[i]->BeginPlay(charcater);
+	}
 }
 
 void UCActionComponent::SetUnarmedMode()
 {
+	if(!!Datas[(int32)Type] && Datas[(int32)Type]->GetEquipment())
+		Datas[(int32)Type]->GetEquipment()->Unequip();
+
+	Datas[(int32)EActionType::Unarmed]->GetEquipment()->Equip();
+
 	ChangeType(EActionType::Unarmed);
 }
 
@@ -49,13 +64,27 @@ void UCActionComponent::SetStormMode()
 
 
 void UCActionComponent::SetMode(EActionType InNewType)
-{
+{	
 	if (Type == InNewType)
 	{
-		SetUnarmedMode();
+		SetUnarmedMode();	// Unarmed는 전용이 따로 있음 
 		return;
 	}
+	else if (IsUnarmedMode() == false)	// 다른 무기 누르면 해제와 장착을 
+	{
+		CLog::Print((int32)InNewType);
+
+		if (!!Datas[(int32)Type] && Datas[(int32)Type]->GetEquipment())
+			Datas[(int32)Type]->GetEquipment()->Unequip();
+	}
+	
+	if (!!Datas[(int32)InNewType] && Datas[(int32)InNewType]->GetEquipment())
+		Datas[(int32)InNewType]->GetEquipment()->Equip();
+	
 	ChangeType(InNewType);
+	// Todo. 노티파이
+	// Todo. 원핸드 꺼내고 폰 컨트롤 켜기
+	// Todo. 구르거나 백스텝 버그 수정 
 }
 
 void UCActionComponent::ChangeType(EActionType InNewType)
