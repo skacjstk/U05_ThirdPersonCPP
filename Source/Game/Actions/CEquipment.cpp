@@ -1,8 +1,10 @@
 #include "CEquipment.h"
 #include "Global.h"
+#include "Characters/ICharacter.h"
 #include "Components/CStateComponent.h"
 #include "Components/CStatusComponent.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ACEquipment::ACEquipment()
 {
@@ -29,13 +31,21 @@ void ACEquipment::Equip_Implementation()
 
 	State->SetEquipMode();
 
-	if(!!Data.AnimMontage)
+	if(!!Data.AnimMontage)	// 몽타주가 있으면, 몽타주에서 노티파이로 호출
 		OwnerCharacter->PlayAnimMontage(Data.AnimMontage, Data.PlayRate, Data.StartSection);
 	else 
 	{
 		Begin_Equip();
 		End_Equip();
 	}
+	// 소유자 캐릭터의 회전 상태 변환하기
+	OwnerCharacter->bUseControllerRotationYaw = Data.bPawnControl;
+	OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = !Data.bPawnControl;
+
+	IICharacter* characterInterface = Cast<IICharacter>(OwnerCharacter);
+	CheckNull(characterInterface);
+	characterInterface->ChangeColor(Color);	// ActionData 에서 생성할때 저장됨
+
 }
 
 void ACEquipment::Begin_Equip_Implementation()
@@ -52,5 +62,10 @@ void ACEquipment::End_Equip_Implementation()
 
 void ACEquipment::Unequip_Implementation()
 {
+	// 소유자 캐릭터의 회전 상태 변환하기
+	OwnerCharacter->bUseControllerRotationYaw = false;
+	OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
 
+	if (OnUnequipmentDelegate.IsBound())
+		OnUnequipmentDelegate.Broadcast();
 }

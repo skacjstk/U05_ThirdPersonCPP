@@ -6,7 +6,11 @@
 #include "Components/COptionComponent.h"
 #include "Components/CMontagesComponent.h"
 #include "Components/CActionComponent.h"
+#include "Actions/CActionData.h"
+#include "Actions/CEquipment.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Materials/MaterialInstanceConstant.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 ACPlayer::ACPlayer()
 {
@@ -57,9 +61,24 @@ void ACPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	//Create Dynamic 
+	UMaterialInstanceConstant* bodyMaterial;
+	UMaterialInstanceConstant* logoMaterial;
+	CHelpers::GetAssetDynamic(&bodyMaterial, "MaterialInstanceConstant'/Game/Character/Materials/M_UE4Man_Body_Inst.M_UE4Man_Body_Inst'");
+	CHelpers::GetAssetDynamic(&logoMaterial, "MaterialInstanceConstant'/Game/Character/Materials/M_UE4Man_ChestLogo_Inst.M_UE4Man_ChestLogo_Inst'");
+
+	BodyMaterial = UMaterialInstanceDynamic::Create(bodyMaterial, nullptr);
+	LogoMaterial = UMaterialInstanceDynamic::Create(logoMaterial, nullptr);
+
+	GetMesh()->SetMaterial(0, BodyMaterial);
+	GetMesh()->SetMaterial(1, LogoMaterial);
+	
+
 	State->OnStateTypeChanged.AddDynamic(this, &ACPlayer::OnStateTypeChanged);	// 상태 등록
 
 	Action->SetUnarmedMode();
+
+
 
 }
 
@@ -192,13 +211,19 @@ void ACPlayer::Begin_BackStep()
 void ACPlayer::End_Roll()
 {
 	State->SetIdleMode();
+
+	bool lookForward = Action->GetCurrent()->GetEquipment()->GetData().bPawnControl;
+	bUseControllerRotationYaw = lookForward;
+	GetCharacterMovement()->bOrientRotationToMovement = !lookForward;
 }
 
 void ACPlayer::End_BackStep()
 {
-	bUseControllerRotationYaw = false;
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-	State->SetIdleMode(); 
+	State->SetIdleMode();
+
+	bool lookForward = Action->GetCurrent()->GetEquipment()->GetData().bPawnControl;
+	bUseControllerRotationYaw = lookForward;
+	GetCharacterMovement()->bOrientRotationToMovement = !lookForward;
 }
 
 void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
@@ -210,5 +235,11 @@ void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 	default:
 		break;
 	}
+}
+
+void ACPlayer::ChangeColor(FLinearColor InColor)
+{
+	BodyMaterial->SetVectorParameterValue("BodyColor", InColor);
+	LogoMaterial->SetVectorParameterValue("BodyColor", InColor);
 }
 

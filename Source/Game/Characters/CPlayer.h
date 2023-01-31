@@ -3,10 +3,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Components/CStateComponent.h"
+#include "ICharacter.h"
 #include "CPlayer.generated.h"
 
 UCLASS()
-class GAME_API ACPlayer : public ACharacter
+class GAME_API ACPlayer : public ACharacter, public IICharacter
 {
 	GENERATED_BODY()
 
@@ -31,6 +32,9 @@ private:
 	class UCMontagesComponent* Montages;
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCActionComponent* Action;
+
+	class UMaterialInstanceDynamic* BodyMaterial;
+	class UMaterialInstanceDynamic* LogoMaterial;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -62,8 +66,10 @@ public:
 	void End_Roll();
 	void End_BackStep();	// 거의 notify 호출 
 
+	// IICharacter을(를) 통해 상속됨
+	virtual void ChangeColor(FLinearColor InColor);
 private:
 	UFUNCTION()
 		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);	
-		// CStateComponent에 OnStateTypeChanged에 바인딩
+	// CStateComponent에 OnStateTypeChanged에 바인딩
 };

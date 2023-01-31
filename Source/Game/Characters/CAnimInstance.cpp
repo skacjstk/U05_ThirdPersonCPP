@@ -25,7 +25,8 @@ void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	CheckNull(character);
 
 	Speed = character->GetVelocity().Size2D();
-	Direction = CalculateDirection(character->GetVelocity(), character->GetControlRotation());	
+//	Direction = CalculateDirection(character->GetVelocity(), character->GetControlRotation());	
+	Direction = CalculateDirection(character->GetVelocity(), character->GetActorForwardVector().Rotation());	
 }
 
 void UCAnimInstance::OnActionTypeChanged(EActionType InPrevType, EActionType InNewType)
