@@ -2,6 +2,7 @@
 #include "Global.h"
 #include "Actions/CEquipment.h"
 #include "Actions/CActionData.h"
+#include "Actions/CDoAction.h"
 #include "GameFramework/Character.h"
 
 UCActionComponent::UCActionComponent()
@@ -60,6 +61,19 @@ void UCActionComponent::SetMagicBallMode()
 void UCActionComponent::SetStormMode()
 {
 	SetMode(EActionType::Storm);
+}
+
+void UCActionComponent::DoAction()
+{
+	CheckTrue(IsUnarmedMode());
+
+	if (!!Datas[(int32)Type])
+	{
+		ACDoAction* doAction = Datas[(int32)Type]->GetDoAction();
+
+		if (!!doAction)
+			doAction->DoAction();
+	}
 }
 
 

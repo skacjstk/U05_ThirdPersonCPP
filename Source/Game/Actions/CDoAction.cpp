@@ -21,7 +21,6 @@ void ACDoAction::BeginPlay()
 	Status = CHelpers::GetComponent<UCStatusComponent>(OwnerCharacter);
 	// 데이터 가져오는 것을 먼저 해야 함 BP의 호출순서
 	Super::BeginPlay();
-	Super::BeginPlay();
 	
 }
 

@@ -39,6 +39,11 @@ void UCStateComponent::SetBackStepMode()
 	ChangeType(EStateType::BackStep);
 }
 
+void UCStateComponent::SetActionMode()
+{
+	ChangeType(EStateType::Action);
+}
+
 void UCStateComponent::SetEquipMode()
 {
 	ChangeType(EStateType::Equip);

@@ -4,6 +4,9 @@
 #include "Engine/DataAsset.h"
 #include "CActionData.generated.h"
 
+/*
+@ struct Equipment
+*/
 USTRUCT(BlueprintType)
 struct FEquipmentData
 {
@@ -22,6 +25,28 @@ public:
 
 };
 
+/*
+@ struct DoAction
+*/
+USTRUCT(BlueprintType)
+struct FDoActionData : public FEquipmentData
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+		float Power = 1.f;
+	UPROPERTY(EditAnywhere)
+		float HitStop;	// 멈칫 시간 
+	UPROPERTY(EditAnywhere)
+		class UParticleSystem* Effect;
+	UPROPERTY(EditAnywhere)
+		FTransform EffectTransform;
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UCameraShake> ShakeClass;
+	UPROPERTY(EditAnywhere)
+		FString SpecificCollisionName = L"None";
+};
+
 UCLASS()
 class GAME_API UCActionData : public UDataAsset
 {
@@ -29,26 +54,35 @@ class GAME_API UCActionData : public UDataAsset
 		
 public:
 	void BeginPlay(class ACharacter* InOwnerCharacter);	// 얘는 BeginPlay가 없어서 직접 만듬;
-	
-	class ACEquipment* GetEquipment();
+public:
+	FORCEINLINE class ACEquipment* GetEquipment() { return Equipment; }
+	FORCEINLINE class ACAttachment* GetAttachment() { return Attachment; }
+	FORCEINLINE class ACDoAction* GetDoAction() { return DoAction; }
 private:
 	FString GetLabelName(class ACharacter* InOwnerCharacter, FString InMiddleName);
 public:
 	//Attachment
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attachment")
 		TSubclassOf<class ACAttachment> AttachmentClass;	// 무기 Mesh, Attach 담당
 
 	// Equipment
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-		TSubclassOf<class ACEquipment> EquipmentClass;	// 무기 내부 몽타주 담당 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Equipment")
+		TSubclassOf<class ACEquipment> EquipmentClass;	// 무기 내부 장착 몽타주 담당 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Equipment")
 		FEquipmentData EquipmentData;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Equipment")
 		FLinearColor EquipmentColor;	// 무기에 맞게 마네킹 몸 색 바꾸기 
+
+	// DoAction
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "DoAction")
+		TSubclassOf<class ACDoAction> DoActionClass;	// 무기 내부 공격 몽타주 및 데미지 담당
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "DoAction")
+		TArray<FDoActionData> DoActionDatas;
 	
-private:
-	class ACAttachment* Attachment;	// 실제 객체
-	class ACEquipment* Equipment;	// 실제 객체
+private:	// 실제 객체
+	class ACAttachment* Attachment;
+	class ACEquipment* Equipment;	
+	class ACDoAction* DoAction;		
 	
 
 };

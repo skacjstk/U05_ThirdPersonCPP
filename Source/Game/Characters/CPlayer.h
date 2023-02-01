@@ -59,6 +59,8 @@ private:
 	void OnFist();
 	void OnOneHand();
 	void OnTwoHand();
+
+	void OnDoAction();
 private:
 	void Begin_Roll();
 	void Begin_BackStep();
