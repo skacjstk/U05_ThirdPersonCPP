@@ -42,6 +42,7 @@ protected:
 public:	
 	void PlayRoll();
 	void PlayBackStep();
+	void PlayHitted();
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "DataTable")

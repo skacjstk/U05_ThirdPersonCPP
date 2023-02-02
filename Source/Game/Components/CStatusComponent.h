@@ -15,6 +15,9 @@ class GAME_API UCStatusComponent : public UActorComponent
 public:	
 	UCStatusComponent();
 
+	void IncreaseHealth(float InAmount);
+	void DecreaseHealth(float InAmount);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -25,9 +28,15 @@ public:
 	FORCEINLINE float GetRunSpeed() { return RunSpeed; }
 	FORCEINLINE bool IsCanMove() { return bCanMove; }
 
+	FORCEINLINE float GetMaxHealth() { return MaxHealth; }
+	FORCEINLINE float GetHealth() { return Health; }
+
 	void SetMove();
 	void SetStop();
 private:
+	UPROPERTY(EditAnywhere, Category = "Health")
+		float MaxHealth = 100.f;
+
 	UPROPERTY(EditAnywhere, Category = "Speed")
 		float SneakSpeed = 200;
 
@@ -38,6 +47,8 @@ private:
 		float RunSpeed = 600;
 
 private:
+	float Health;
+
 	bool bCanMove = true;
 
 };

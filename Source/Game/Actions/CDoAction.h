@@ -29,6 +29,11 @@ public:
 	virtual void DoAction() {};
 	virtual void Begin_DoAction() {};
 	virtual void End_DoAction() {};
+
+	UFUNCTION()
+		virtual void OnAttachmentBeginOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter) {};
+	UFUNCTION()
+		virtual void OnAttachmentEndOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter) {};
 protected:
 	UPROPERTY(BlueprintReadOnly)
 		class ACharacter* OwnerCharacter;

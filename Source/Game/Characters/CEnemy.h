@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "ICharacter.h"
+#include "Components/CStateComponent.h"
 #include "CEnemy.generated.h"
 
 UCLASS()
@@ -15,11 +16,24 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 public:
 	void ChangeColor(FLinearColor InColor) override;
 
 private:
+	UFUNCTION()
+		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);
+	void Hitted();
+	void Dead();
+private:
+	//	위젯
+	UPROPERTY(VisibleDefaultsOnly)
+		class UWidgetComponent* NameWidget;
+
+	UPROPERTY(VisibleDefaultsOnly)
+		class UWidgetComponent* HealthWidget;
+
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCActionComponent* Action;
 
@@ -35,4 +49,7 @@ private:
 private:
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;
+	float DamageValue;
+	AActor* Causer;
+	ACharacter* Attacker;
 };
