@@ -22,5 +22,18 @@ public:
 	virtual void OnAttachmentEndOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter) override;
 
 private:
-	int32 ComboCount;
+	UFUNCTION()
+		void RestoreGlobalTimeDilation();
+public: //노티파이 호출
+	FORCEINLINE void EnableCombo()		{	bCanCombo = true;	}
+	FORCEINLINE void DisableCombo()		 {	bCanCombo = false;	}
+	FORCEINLINE void ClearHittedCharacters() { HittedCharacters.Empty(); }
+
+private:
+	int32 ComboCount = 0;	// 평타 콤보
+	int32 SamshCount;	// 커스텀: 언젠가 스매시 만들 것comboCount * SmashCount 곱으로 스매시 데이터 접근 
+	bool bCanCombo;	//콤보 허용구간 켜고 끄기
+	bool bSucceed;	//콤보 성공여부
+	TArray<class ACharacter*> HittedCharacters;	// 다단히트 방지용 타격대상 등록 
+
 };

@@ -58,6 +58,7 @@ public:
 	FORCEINLINE class ACEquipment* GetEquipment() { return Equipment; }
 	FORCEINLINE class ACAttachment* GetAttachment() { return Attachment; }
 	FORCEINLINE class ACDoAction* GetDoAction() { return DoAction; }
+	FORCEINLINE FLinearColor GetEquipmentColor() { return EquipmentColor; }
 private:
 	FString GetLabelName(class ACharacter* InOwnerCharacter, FString InMiddleName);
 public:

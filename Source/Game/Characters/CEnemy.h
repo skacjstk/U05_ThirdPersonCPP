@@ -26,6 +26,8 @@ private:
 		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);
 	void Hitted();
 	void Dead();
+	UFUNCTION()
+		void RestoreLogoColor();
 private:
 	//	위젯
 	UPROPERTY(VisibleDefaultsOnly)
@@ -49,6 +51,8 @@ private:
 private:
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;
+	UPROPERTY(EditAnywhere)
+		float LaunchValue = 25.f;	// 밀려나는 고유값
 	float DamageValue;
 	AActor* Causer;
 	ACharacter* Attacker;

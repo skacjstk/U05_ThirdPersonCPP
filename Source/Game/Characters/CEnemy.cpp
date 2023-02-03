@@ -9,6 +9,7 @@
 #include "Widgets/CUserWidget_Health.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "Actions/CActionData.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 ACEnemy::ACEnemy()
@@ -127,8 +128,14 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 
 void ACEnemy::ChangeColor(FLinearColor InColor)
 {
-	BodyMaterial->SetVectorParameterValue("BodyColor", InColor);
+	if (State->IsHittedMode())
+	{
+		LogoMaterial->SetVectorParameterValue("LogoLightColor", InColor);
+		LogoMaterial->SetScalarParameterValue("IsHitted", 1);
+		return;
+	}
 	LogoMaterial->SetVectorParameterValue("BodyColor", InColor);
+	BodyMaterial->SetVectorParameterValue("BodyColor", InColor);
 }
 
 void ACEnemy::Hitted()	 
@@ -140,8 +147,25 @@ void ACEnemy::Hitted()
 
 	// Play Hit Montage
 	Montages->PlayHitted();
+
+	// Launch HitBack
+	FVector start = GetActorLocation();	// 나의 위치
+	FVector target = Attacker->GetActorLocation();	// 공격자의 위치	(TakeDamage) 에서 받아왔음
+	FVector direction =	(start - target);
+	direction.Normalize();
+	LaunchCharacter(direction * DamageValue * LaunchValue, true, false);
+
+	ChangeColor(FLinearColor::Red * 100.f);
+	UKismetSystemLibrary::K2_SetTimer(this, "RestoreLogoColor", 1.f, false);
 }
 void ACEnemy::Dead() 
 {
+}
+
+void ACEnemy::RestoreLogoColor()
+{
+	FLinearColor color = Action->GetCurrent()->GetEquipmentColor();
+	LogoMaterial->SetVectorParameterValue("LogoLightColor", color);
+	LogoMaterial->SetScalarParameterValue("IsHitted", 0);
 }
 
