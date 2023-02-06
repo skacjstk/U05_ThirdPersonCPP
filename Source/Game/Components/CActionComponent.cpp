@@ -2,6 +2,7 @@
 #include "Global.h"
 #include "Actions/CEquipment.h"
 #include "Actions/CActionData.h"
+#include "Actions/CAttachment.h"
 #include "Actions/CDoAction.h"
 #include "GameFramework/Character.h"
 
@@ -76,6 +77,27 @@ void UCActionComponent::DoAction()
 	}
 }
 
+void UCActionComponent::DoOnAim()
+{
+	if (!!Datas[(int32)Type])
+	{
+		ACDoAction* doAction = Datas[(int32)Type]->GetDoAction();
+
+		if (!!doAction)
+			doAction->OnAim();
+	}
+}
+
+void UCActionComponent::DoOffAim()
+{
+	if (!!Datas[(int32)Type])
+	{
+		ACDoAction* doAction = Datas[(int32)Type]->GetDoAction();
+
+		if (!!doAction)
+			doAction->OffAim();
+	}
+}
 
 void UCActionComponent::SetMode(EActionType InNewType)
 {	
@@ -107,4 +129,24 @@ void UCActionComponent::ChangeType(EActionType InNewType)
 	Type = InNewType;
 	if (OnActionTypeChanged.IsBound())
 		OnActionTypeChanged.Broadcast(prevType, InNewType);
+}
+
+void UCActionComponent::Dead()
+{
+	OffAllCollisions();
+}
+
+void UCActionComponent::End_Dead()
+{
+	// Tod. All Attachment, Equipment, DoAction Release
+}
+
+void UCActionComponent::OffAllCollisions()
+{
+	for (const auto& data : Datas) 
+	{
+		if (data == nullptr || data->GetAttachment() == nullptr)
+			continue;
+		data->GetAttachment()->OffCollisions();
+	}
 }

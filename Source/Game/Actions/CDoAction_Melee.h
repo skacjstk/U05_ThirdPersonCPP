@@ -25,9 +25,10 @@ private:
 	UFUNCTION()
 		void RestoreGlobalTimeDilation();
 public: //노티파이 호출
-	FORCEINLINE void EnableCombo()		{	bCanCombo = true;	}
-	FORCEINLINE void DisableCombo()		 {	bCanCombo = false;	}
+	FORCEINLINE void EnableCombo() { bCanCombo = true; }
+	FORCEINLINE void DisableCombo() { bCanCombo = false; }
 	FORCEINLINE void ClearHittedCharacters() { HittedCharacters.Empty(); }
+	FORCEINLINE FString GetSpecificCollisionName() { return Datas[ComboCount].SpecificCollisionName; }
 
 private:
 	int32 ComboCount = 0;	// 평타 콤보

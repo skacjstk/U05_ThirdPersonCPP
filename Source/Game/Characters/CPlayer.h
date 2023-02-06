@@ -59,8 +59,12 @@ private:
 	void OnFist();
 	void OnOneHand();
 	void OnTwoHand();
+	void OnMagicBall();
 
 	void OnDoAction();
+
+	void OnAim();	// 우클릭
+	void OffAim();
 private:
 	void Begin_Roll();
 	void Begin_BackStep();

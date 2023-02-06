@@ -5,6 +5,7 @@
 #include "Components/CMontagesComponent.h"
 #include "Components/CActionComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Widgets/CUserWidget_Name.h"
 #include "Widgets/CUserWidget_Health.h"
 #include "Materials/MaterialInstanceConstant.h"
@@ -117,6 +118,8 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 	Causer = DamageCauser;
 	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
 
+	CLog::Print(DamageValue, -1, 1);
+
 	Status->DecreaseHealth(this->DamageValue);
 	if (Status->GetHealth() <= 0.f) {
 		State->SetDeadMode();
@@ -150,7 +153,7 @@ void ACEnemy::Hitted()
 
 	// Launch HitBack
 	FVector start = GetActorLocation();	// 나의 위치
-	FVector target = Attacker->GetActorLocation();	// 공격자의 위치	(TakeDamage) 에서 받아왔음
+	FVector target = Causer->GetActorLocation();	// 공격한 물체의 위치	(TakeDamage) 에서 받아왔음
 	FVector direction =	(start - target);
 	direction.Normalize();
 	LaunchCharacter(direction * DamageValue * LaunchValue, true, false);
@@ -160,6 +163,34 @@ void ACEnemy::Hitted()
 }
 void ACEnemy::Dead() 
 {
+	CheckFalse(State->IsDeadMode());
+
+	// Widget Visible false
+	NameWidget->SetVisibility(false);
+	HealthWidget->SetVisibility(false);
+
+	// All Weapon Collision Disable
+	Action->Dead();
+
+	// Ragdoll
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->GlobalAnimRateScale = 0.f;
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	// AddForce(LaunchCharacter)
+	FVector start = GetActorLocation();
+	FVector target = Attacker->GetActorLocation();
+	FVector direction = start - target;
+	direction.Normalize();
+	GetMesh()->AddForce(direction * DamageValue * DeadLaunchValue);
+	
+	UKismetSystemLibrary::K2_SetTimer(this, "End_Dead", 5.f, false);
+}
+
+void ACEnemy::End_Dead()
+{
+	Action->End_Dead();
+	Destroy();
 }
 
 void ACEnemy::RestoreLogoColor()

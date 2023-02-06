@@ -27,6 +27,8 @@ private:
 	void Hitted();
 	void Dead();
 	UFUNCTION()
+		void End_Dead();
+	UFUNCTION()
 		void RestoreLogoColor();
 private:
 	//	위젯
@@ -51,6 +53,9 @@ private:
 private:
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;
+
+	UPROPERTY(EditAnywhere)
+		float DeadLaunchValue = 10000000.f;
 	UPROPERTY(EditAnywhere)
 		float LaunchValue = 25.f;	// 밀려나는 고유값
 	float DamageValue;

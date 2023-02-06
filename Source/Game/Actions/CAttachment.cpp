@@ -68,10 +68,22 @@ void ACAttachment::OnComponentEndOverlap(UPrimitiveComponent* OverlappedComponen
 
 void ACAttachment::OnCollisions(FString InCollisionName)
 {
-	for (UShapeComponent* shape : ShapeComponents)
+	if (InCollisionName.Compare("None") == 0)
 	{
-		shape->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		for (UShapeComponent* shape : ShapeComponents)
+		{
+			shape->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		}	// 전체 모양 켜기
 	}
+	else
+	{
+		for (UShapeComponent* shape : ShapeComponents)
+		{
+			if(shape->GetName().Contains(InCollisionName))	// 콜리전 이름과 소켓이름을 일치시켜놨으니까 이렇게 되는거
+				shape->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		}
+	}
+
 }
 void ACAttachment::OffCollisions()
 {

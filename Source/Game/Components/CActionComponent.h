@@ -52,6 +52,15 @@ public:
 	void SetStormMode();
 
 	void DoAction();
+
+	void DoOnAim();		// 우클릭 누르기
+	void DoOffAim();	// 우클릭 떼기
+
+	//	사망 시 충돌체 끄기 외 사망했을 때 했어야 할 일을 호출 (컴포넌트 속 has 관계 아이템 제거 등)
+	void Dead();
+	void End_Dead();
+
+	void OffAllCollisions();
 private:
 	void SetMode(EActionType InNewType);
 	void ChangeType(EActionType InNewType);
