@@ -16,7 +16,7 @@ public:
 	void Tick(float Deltatime);
 
 	FORCEINLINE bool IsAvaliable() { return SpringArm != nullptr && Camera != nullptr; }// Aim 기능을 써도 되는 애인지 
-
+	FORCEINLINE bool IsZooming() { return bZooming; }
 	void On();
 	void Off();
 private:
@@ -30,6 +30,7 @@ private:
 	bool bZooming;
 private:
 	class UCurveFloat* Curve;
+	class ACHUD* Hud;
 	FTimeline Timeline;
 
 	FOnTimelineFloat TimelineFloat;

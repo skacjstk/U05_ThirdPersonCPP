@@ -12,6 +12,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Actions/CActionData.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Actions/CThrow.h"
 
 ACEnemy::ACEnemy()
 {
@@ -179,9 +180,14 @@ void ACEnemy::Dead()
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	// AddForce(LaunchCharacter)
 	FVector start = GetActorLocation();
-	FVector target = Attacker->GetActorLocation();
+	FVector target = Causer->GetActorLocation();
 	FVector direction = start - target;
 	direction.Normalize();
+
+	// 투사체일 경우 DeadLaunch 를 낮추기 
+	if (Causer->IsA<ACThrow>())
+		DeadLaunchValue *= 0.075f;
+
 	GetMesh()->AddForce(direction * DamageValue * DeadLaunchValue);
 	
 	UKismetSystemLibrary::K2_SetTimer(this, "End_Dead", 5.f, false);

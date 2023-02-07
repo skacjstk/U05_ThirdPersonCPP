@@ -3,6 +3,7 @@
 #include "CEquipment.h"
 #include "CAttachment.h"
 #include "CDoAction.h"
+#include "CThrow.h"
 #include "GameFramework/Character.h"
 
 void UCActionData::BeginPlay(ACharacter* InOwnerCharacter)

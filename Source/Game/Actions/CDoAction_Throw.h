@@ -4,11 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Actions/CDoAction.h"
+#include "Components/CActionComponent.h"
 #include "CDoAction_Throw.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class GAME_API ACDoAction_Throw : public ACDoAction
 {
@@ -28,6 +26,14 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
+	UFUNCTION()
+		void OnThrowBeginOverlap(FHitResult InHitResult);
+
+	UFUNCTION()
+		void AbortByActionTypeChanged(EActionType InPrevType, EActionType InNewType);
+private:
 	UPROPERTY()
 		class UCAim* Aim;
+
+	ACThrow* ThrowObject;
 };

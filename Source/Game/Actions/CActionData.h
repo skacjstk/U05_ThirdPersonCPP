@@ -45,6 +45,8 @@ public:
 		TSubclassOf<class UCameraShake> ShakeClass;
 	UPROPERTY(EditAnywhere)
 		FString SpecificCollisionName = L"None";
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class ACThrow> ThrowClass;	// 액션 수행시 던져질 아이템
 };
 
 UCLASS()

@@ -1,5 +1,6 @@
 #include "CAim.h"
 #include "Global.h"
+#include "CHUD.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
@@ -18,6 +19,10 @@ void UCAim::BeginPlay(ACharacter* InOwnerCharacter)
 	TimelineFloat.BindUFunction(this, "Zooming");
 	Timeline.AddInterpFloat(Curve, TimelineFloat);
 	Timeline.SetPlayRate(200.f);
+
+	// Get HUD
+	//UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD<ACHUD>();
+	Hud = OwnerCharacter->GetWorld()->GetFirstPlayerController()->GetHUD<ACHUD>();
 }
 
 void UCAim::Tick(float Deltatime)
@@ -29,7 +34,7 @@ void UCAim::On()
 {
 	CheckTrue(bZooming);
 	bZooming = true;
-
+	Hud->VisibleAim();
 	CheckFalse(IsAvaliable());
 
 	SpringArm->TargetArmLength = 100.f;
@@ -44,7 +49,7 @@ void UCAim::Off()
 {
 	CheckFalse(bZooming);
 	bZooming = false;
-
+	Hud->HiddenAim();
 	CheckFalse(IsAvaliable());
 
 	SpringArm->TargetArmLength = 200.f;	// Todo: 옵션 넣기
