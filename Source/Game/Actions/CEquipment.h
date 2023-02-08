@@ -22,6 +22,7 @@ public:
 	// 따로구현 해야하는데 귀찮
 	FORCEINLINE void SetData(FEquipmentData InData) { Data = InData; }
 	FORCEINLINE void SetColor(FLinearColor InColor) { Color = InColor; }
+	FORCEINLINE const bool* IsEquipped() { return &bEquipped; }
 
 	FORCEINLINE FEquipmentData GetData() { return Data; }
 protected:
@@ -70,5 +71,6 @@ protected:
 private:
 	FEquipmentData Data;	// ActionData 에 있음
 	FLinearColor Color;
+	bool bEquipped;	// 장착 완료 표시
 
 };

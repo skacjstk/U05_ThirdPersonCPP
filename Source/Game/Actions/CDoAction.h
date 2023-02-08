@@ -17,6 +17,7 @@ public:
 	ACDoAction();
 
 	FORCEINLINE void SetDatas(TArray<FDoActionData> InDatas) { Datas = InDatas; }
+	FORCEINLINE void SetEquipped(const bool* InEquipped) { bEquipped = InEquipped; }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -48,4 +49,5 @@ protected:
 		class UCStatusComponent* Status;
 
 	TArray<FDoActionData> Datas;
+	const bool* bEquipped;	//CEquipment 에서 받아올 것
 };

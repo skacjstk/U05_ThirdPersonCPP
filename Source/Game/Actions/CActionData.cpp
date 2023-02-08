@@ -41,6 +41,12 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter)
 		DoAction->SetActorLabel(GetLabelName(InOwnerCharacter, "DoAction"));
 		UGameplayStatics::FinishSpawningActor(DoAction, transform);
 
+		// 있으면, Equipment의 현재 장착여부 변수 레퍼런스 설정
+		if(!!Equipment)
+		{ 
+			DoAction->SetEquipped(Equipment->IsEquipped());
+		}
+
 		if (!!Attachment)
 		{
 			// DoAction 오버랩 이벤트 바인딩
