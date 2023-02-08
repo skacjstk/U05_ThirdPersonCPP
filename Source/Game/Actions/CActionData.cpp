@@ -6,9 +6,13 @@
 #include "CThrow.h"
 #include "GameFramework/Character.h"
 
-void UCActionData::BeginPlay(ACharacter* InOwnerCharacter)
+void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContainer** OutObject)
 {
 	FTransform transform;
+
+	ACAttachment* Attachment = nullptr;
+	ACEquipment* Equipment = nullptr;
+	ACDoAction* DoAction = nullptr;
 	//CEquipment 생성: Character 만 World가 있기에 
 	if (!!AttachmentClass)
 	{
@@ -52,9 +56,15 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter)
 			// DoAction 오버랩 이벤트 바인딩
 			Attachment->OnAttachmentBeginOverlap.AddDynamic(DoAction, &ACDoAction::OnAttachmentBeginOverlap);
 			Attachment->OnAttachmentEndOverlap.AddDynamic(DoAction, &ACDoAction::OnAttachmentEndOverlap);
-
 		}
-	}
+	}//end if
+
+	*OutObject = NewObject<UCActionObjectContainer>();
+	(*OutObject)->Attachment = Attachment;
+	(*OutObject)->Equipment = Equipment;
+	(*OutObject)->DoAction = DoAction;		// Friend 먹여놔서 된다. 
+	(*OutObject)->EquipmentColor = EquipmentColor;
+
 }
 
 FString UCActionData::GetLabelName(class ACharacter* InOwnerCharacter, FString InMiddleName)

@@ -86,8 +86,6 @@ void ACEnemy::BeginPlay()
 	UCUserWidget_Health* healthWidgetObject = Cast<UCUserWidget_Health>(HealthWidget->GetUserWidgetObject());
 	if (!!healthWidgetObject)
 		healthWidgetObject->Update(Status->GetHealth(), Status->GetMaxHealth());
-
-	Action->SetUnarmedMode();
 }
 
 void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)

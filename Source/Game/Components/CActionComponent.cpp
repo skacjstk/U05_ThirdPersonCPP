@@ -1,6 +1,7 @@
 #include "CActionComponent.h"
 #include "Global.h"
 #include "Actions/CEquipment.h"
+#include "Actions/CActionObjectContainer.h"
 #include "Actions/CActionData.h"
 #include "Actions/CAttachment.h"
 #include "Actions/CDoAction.h"

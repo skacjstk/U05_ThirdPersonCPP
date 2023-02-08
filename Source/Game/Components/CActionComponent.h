@@ -42,14 +42,14 @@ public:
 	UFUNCTION(BlueprintPure)
 		FORCEINLINE bool IsStormMode() { return Type == EActionType::Storm; }
 public:
-	// ActionType Set
-	void SetUnarmedMode();
-	void SetFistMode();
-	void SetOneHandMode();
-	void SetTwoHandMode();
-	void SetWarpMode();
-	void SetMagicBallMode();
-	void SetStormMode();
+	// ActionType Set								 
+	UFUNCTION(BlueprintCallable) void SetUnarmedMode();								 
+	UFUNCTION(BlueprintCallable) void SetFistMode();								 
+	UFUNCTION(BlueprintCallable) void SetOneHandMode();								 
+	UFUNCTION(BlueprintCallable) void SetTwoHandMode();								 
+	UFUNCTION(BlueprintCallable) void SetWarpMode();								 
+	UFUNCTION(BlueprintCallable) void SetMagicBallMode();								 
+	UFUNCTION(BlueprintCallable) void SetStormMode();
 
 	void DoAction();
 
@@ -73,6 +73,7 @@ private:
 	EActionType Type;
 private:
 	UPROPERTY(EditDefaultsOnly)
-		class UCActionData* Datas[(int32)EActionType::Max];	// 실제 눈에 보이는 데이터: 세팅값 포함 
-
+		class UCActionData* Datas[(int32)EActionType::Max];	// Asset 데이터: 세팅값 포함 
+	UPROPERTY()	// 내부 Heap할당 하기 때문에 넣어줌 
+		class UCActionObjectContainer* DataObjects[(int32)EActionType::Max];	// 실제 객체 
 };

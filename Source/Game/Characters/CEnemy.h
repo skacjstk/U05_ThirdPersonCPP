@@ -30,16 +30,17 @@ private:
 		void End_Dead();
 	UFUNCTION()
 		void RestoreLogoColor();
-private:
+protected:
 	//	위젯
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+		class UCActionComponent* Action;
+private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class UWidgetComponent* NameWidget;
 
 	UPROPERTY(VisibleDefaultsOnly)
 		class UWidgetComponent* HealthWidget;
 
-	UPROPERTY(VisibleDefaultsOnly)
-		class UCActionComponent* Action;
 
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCMontagesComponent* Montages;
