@@ -24,7 +24,7 @@ protected:
 	virtual void BeginPlay() override;
 public:
 	UFUNCTION(BlueprintPure)
-		FORCEINLINE class UCActionData* GetCurrent() { return Datas[(int32)Type]; }
+		FORCEINLINE class UCActionObjectContainer* GetCurrent() { return DataObjects[(int32)Type]; } // 실제 메모리 데이터로 변경
 public:
 	//ActionType Is 
 	UFUNCTION(BlueprintPure)
@@ -73,7 +73,7 @@ private:
 	EActionType Type;
 private:
 	UPROPERTY(EditDefaultsOnly)
-		class UCActionData* Datas[(int32)EActionType::Max];	// Asset 데이터: 세팅값 포함 
+		class UCActionData* Datas[(int32)EActionType::Max];	// DataAsset: 세팅값 포함 
 	UPROPERTY()	// 내부 Heap할당 하기 때문에 넣어줌 
-		class UCActionObjectContainer* DataObjects[(int32)EActionType::Max];	// 실제 객체 
+		class UCActionObjectContainer* DataObjects[(int32)EActionType::Max];	// Data 실제 객체 
 };

@@ -20,17 +20,17 @@ void UCActionComponent::BeginPlay()
 	ACharacter* charcater = Cast<ACharacter>(GetOwner());
 	for (int i = 0; i < (int32)EActionType::Max; ++i)
 	{
-		if(!!Datas[i])
-			Datas[i]->BeginPlay(charcater);
+		if(!!Datas[i])	// 바뀌면 안됨. 생성부분
+			Datas[i]->BeginPlay(charcater, &DataObjects[i]);	// 만든 결과를 DataObjects에 저장
 	}
 }
 
 void UCActionComponent::SetUnarmedMode()
 {
-	if(!!Datas[(int32)Type] && Datas[(int32)Type]->GetEquipment())
-		Datas[(int32)Type]->GetEquipment()->Unequip();
+	if(!!DataObjects[(int32)Type] && DataObjects[(int32)Type]->GetEquipment())
+		DataObjects[(int32)Type]->GetEquipment()->Unequip();
 
-	Datas[(int32)EActionType::Unarmed]->GetEquipment()->Equip();
+	DataObjects[(int32)EActionType::Unarmed]->GetEquipment()->Equip();
 
 	ChangeType(EActionType::Unarmed);
 }
@@ -69,9 +69,9 @@ void UCActionComponent::DoAction()
 {
 	CheckTrue(IsUnarmedMode());
 
-	if (!!Datas[(int32)Type])
+	if (!!DataObjects[(int32)Type])
 	{
-		ACDoAction* doAction = Datas[(int32)Type]->GetDoAction();
+		ACDoAction* doAction = DataObjects[(int32)Type]->GetDoAction();
 
 		if (!!doAction)
 			doAction->DoAction();
@@ -80,9 +80,9 @@ void UCActionComponent::DoAction()
 
 void UCActionComponent::DoOnAim()
 {
-	if (!!Datas[(int32)Type])
+	if (!!DataObjects[(int32)Type])
 	{
-		ACDoAction* doAction = Datas[(int32)Type]->GetDoAction();
+		ACDoAction* doAction = DataObjects[(int32)Type]->GetDoAction();
 
 		if (!!doAction)
 			doAction->OnAim();
@@ -91,9 +91,9 @@ void UCActionComponent::DoOnAim()
 
 void UCActionComponent::DoOffAim()
 {
-	if (!!Datas[(int32)Type])
+	if (!!DataObjects[(int32)Type])
 	{
-		ACDoAction* doAction = Datas[(int32)Type]->GetDoAction();
+		ACDoAction* doAction = DataObjects[(int32)Type]->GetDoAction();
 
 		if (!!doAction)
 			doAction->OffAim();
@@ -111,17 +111,14 @@ void UCActionComponent::SetMode(EActionType InNewType)
 	{
 		CLog::Print((int32)InNewType);
 
-		if (!!Datas[(int32)Type] && Datas[(int32)Type]->GetEquipment())
-			Datas[(int32)Type]->GetEquipment()->Unequip();
+		if (!!DataObjects[(int32)Type] && DataObjects[(int32)Type]->GetEquipment())
+			DataObjects[(int32)Type]->GetEquipment()->Unequip();
 	}
 	
-	if (!!Datas[(int32)InNewType] && Datas[(int32)InNewType]->GetEquipment())
-		Datas[(int32)InNewType]->GetEquipment()->Equip();
+	if (!!DataObjects[(int32)InNewType] && DataObjects[(int32)InNewType]->GetEquipment())
+		DataObjects[(int32)InNewType]->GetEquipment()->Equip();
 	
 	ChangeType(InNewType);
-	// Todo. 노티파이
-	// Todo. 원핸드 꺼내고 폰 컨트롤 켜기
-	// Todo. 구르거나 백스텝 버그 수정 
 }
 
 void UCActionComponent::ChangeType(EActionType InNewType)
@@ -144,7 +141,7 @@ void UCActionComponent::End_Dead()
 
 void UCActionComponent::OffAllCollisions()
 {
-	for (const auto& data : Datas) 
+	for (const auto& data : DataObjects)
 	{
 		if (data == nullptr || data->GetAttachment() == nullptr)
 			continue;

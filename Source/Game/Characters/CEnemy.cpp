@@ -11,8 +11,8 @@
 #include "Materials/MaterialInstanceConstant.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Actions/CActionData.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Actions/CThrow.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ACEnemy::ACEnemy()
 {
@@ -80,7 +80,10 @@ void ACEnemy::BeginPlay()
 	NameWidget->InitWidget();
 	UCUserWidget_Name* nameWidgetObject = Cast<UCUserWidget_Name>(NameWidget->GetUserWidgetObject());
 	if (!!nameWidgetObject)	
+	{		
 		nameWidgetObject->SetPawnName(GetName());
+		nameWidgetObject->SetControllerName(GetController()->GetName());		// Controller Setting
+	}
 	
 	HealthWidget->InitWidget();
 	UCUserWidget_Health* healthWidgetObject = Cast<UCUserWidget_Health>(HealthWidget->GetUserWidgetObject());
