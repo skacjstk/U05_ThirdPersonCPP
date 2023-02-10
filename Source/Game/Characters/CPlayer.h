@@ -4,10 +4,11 @@
 #include "GameFramework/Character.h"
 #include "Components/CStateComponent.h"
 #include "ICharacter.h"
+#include "GenericTeamAgentInterface.h"
 #include "CPlayer.generated.h"
 
 UCLASS()
-class GAME_API ACPlayer : public ACharacter, public IICharacter
+class GAME_API ACPlayer : public ACharacter, public IICharacter, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -35,13 +36,16 @@ private:
 
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;
-	
+
+	UPROPERTY(EditDefaultsOnly)
+		uint8 TeamID = 0;
 protected:
 	virtual void BeginPlay() override;
 
 public:	
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	FGenericTeamId GetGenericTeamId() const override;	// Interface 재정의 
 
 private:
 	//Axis Mapping

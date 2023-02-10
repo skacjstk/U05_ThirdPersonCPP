@@ -13,8 +13,12 @@ public:
 	ACEnemy_AI();
 
 	FORCEINLINE class UBehaviorTree* GetBehaviorTree() { return BehaviorTree; }
+	FORCEINLINE uint8 GetTeamID() { return TeamID; }
+
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 		class UBehaviorTree* BehaviorTree;
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+		uint8 TeamID = 1;
 };
