@@ -5,6 +5,7 @@
 #include "CAIController.h"
 #include "Components/CBehaviorComponent.h"
 #include "Components/CStateComponent.h"
+#include "Components/CPatrolComponent.h"
 
 UBTService_Melee::UBTService_Melee()
 {
@@ -21,6 +22,7 @@ void UBTService_Melee::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 
 	ACEnemy_AI* aiPawn = Cast<ACEnemy_AI>(controller->GetPawn());
 	UCStateComponent* state = CHelpers::GetComponent<UCStateComponent>(aiPawn);
+	UCPatrolComponent* patrol = CHelpers::GetComponent<UCPatrolComponent>(aiPawn);
 	
 	if (state->IsHittedMode())
 	{
@@ -28,11 +30,16 @@ void UBTService_Melee::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 		return;
 	}
 	ACPlayer* target = behavior->GetTargetPlayer();
+	// 타겟이 없을 때
 	if (target == nullptr)
 	{
-		behavior->SetWaitMode();
+		if (patrol != nullptr && patrol->IsValid()) {
+			behavior->SetPatrolMode();
+		}
+		else
+			behavior->SetWaitMode();
+
 		return;
-		// 아직 순찰경로가 없음 
 	}
 
 	float distance = aiPawn->GetDistanceTo(target);
@@ -43,12 +50,13 @@ void UBTService_Melee::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 		behavior->SetActionMode();
 		return;
 
-		// 돌격거리보다 가까우면
-		if (distance < controller->GetSightRadius())
-		{
-			behavior->SetApproachMode();
-			return;
-		}
+	}
+
+	// 돌격거리보다 가까우면
+	if (distance < controller->GetSightRadius())
+	{
+		behavior->SetApproachMode();
+		return;
 	}
 }
 

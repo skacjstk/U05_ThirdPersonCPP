@@ -17,6 +17,8 @@ public:
 
 
 private:
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCPatrolComponent* Patrol;
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 		class UBehaviorTree* BehaviorTree;
 	UPROPERTY(EditDefaultsOnly, Category = "AI")

@@ -17,8 +17,7 @@ EBTNodeResult::Type UBTTaskNode_Speed::ExecuteTask(UBehaviorTreeComponent& Owner
     UCStatusComponent* status = CHelpers::GetComponent<UCStatusComponent>(aiPawn);
 
     controller->GetPawn();
-    status->SetSpeed(Type);
+    status->SetSpeed(Type); // 스피드 값 설정
 
     return EBTNodeResult::Succeeded;
-
 }

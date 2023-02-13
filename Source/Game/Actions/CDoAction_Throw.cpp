@@ -22,13 +22,17 @@ void ACDoAction_Throw::BeginPlay()
 void ACDoAction_Throw::DoAction()
 {
 	Super::DoAction();
-	CheckFalse(Aim->IsAvaliable());
+//	CheckFalse(Aim->IsAvaliable());	// Ai는 Aim이 없으니까 공통점을 위해 사용 안함
 	CheckFalse(State->IsIdleMode());
 
-	if (Aim->IsZooming() == false)
+	if (Aim->IsAvaliable())
 	{
-		Aim->On();
+		if (Aim->IsZooming() == false)
+		{
+			Aim->On();
+		}
 	}
+
 	State->SetActionMode();
 
 	OwnerCharacter->PlayAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);
