@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "ICharacter.h"
 #include "Components/CStateComponent.h"
+#include "Components/SlateWrapperTypes.h"
 #include "CEnemy.generated.h"
 
 UCLASS()
@@ -24,8 +25,8 @@ public:
 private:
 	UFUNCTION()
 		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);
-	void Hitted();
-	void Dead();
+	void Hitted() override;
+	void Dead() override;
 	UFUNCTION()
 		void End_Dead();
 	UFUNCTION()
@@ -55,6 +56,8 @@ private:
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;
 
+	UPROPERTY(EditAnywhere)
+		ESlateVisibility VisibleType = ESlateVisibility::Hidden;
 	UPROPERTY(EditAnywhere)
 		float DeadLaunchValue = 10000000.f;
 	UPROPERTY(EditAnywhere)

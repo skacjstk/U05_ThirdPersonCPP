@@ -77,6 +77,9 @@ public:
 	void End_Roll();
 	void End_BackStep();	// 거의 notify 호출 
 
+	virtual void Hitted() override;
+	virtual void Dead() override;
+
 	// IICharacter을(를) 통해 상속됨
 	virtual void ChangeColor(FLinearColor InColor);
 private:

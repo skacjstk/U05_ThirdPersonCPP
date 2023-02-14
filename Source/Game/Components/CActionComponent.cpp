@@ -109,7 +109,7 @@ void UCActionComponent::SetMode(EActionType InNewType)
 	}
 	else if (IsUnarmedMode() == false)	// 다른 무기 누르면 해제와 장착을 
 	{
-		CLog::Print((int32)InNewType);
+	//	CLog::Print((int32)InNewType);
 
 		if (!!DataObjects[(int32)Type] && DataObjects[(int32)Type]->GetEquipment())
 			DataObjects[(int32)Type]->GetEquipment()->Unequip();
@@ -136,7 +136,19 @@ void UCActionComponent::Dead()
 
 void UCActionComponent::End_Dead()
 {
-	// Tod. All Attachment, Equipment, DoAction Release
+	// 받아놓은 것들 지우기
+	for (int32 i = 0; i < (int32)EActionType::Max; ++i)
+	{
+		if (!!DataObjects[i] && !!DataObjects[i]->GetAttachment())
+			DataObjects[i]->GetAttachment()->Destroy();
+
+		if (!!DataObjects[i] && !!DataObjects[i]->GetEquipment())
+			DataObjects[i]->GetEquipment()->Destroy();
+
+		if (!!DataObjects[i] && !!DataObjects[i]->GetDoAction())
+			DataObjects[i]->GetDoAction()->Destroy();
+	}
+
 }
 
 void UCActionComponent::OffAllCollisions()

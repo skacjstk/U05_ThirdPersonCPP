@@ -264,6 +264,14 @@ void ACPlayer::End_BackStep()
 	GetCharacterMovement()->bOrientRotationToMovement = !lookForward;
 }
 
+void ACPlayer::Hitted()
+{
+}
+
+void ACPlayer::Dead()
+{
+}
+
 void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 {
 	switch (InNewType)
