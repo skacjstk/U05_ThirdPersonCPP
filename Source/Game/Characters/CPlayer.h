@@ -15,6 +15,7 @@ class GAME_API ACPlayer : public ACharacter, public IICharacter, public IGeneric
 public:
 	ACPlayer();
 
+	FORCEINLINE class UCUserWidget_ActionContainer* GetActionContainerWidget() { return ActionContainerWidget; }
 private:
 	// SceneComponent
 	UPROPERTY(VisibleDefaultsOnly)
@@ -39,6 +40,8 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 		uint8 TeamID = 0;
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class UCUserWidget_ActionContainer> ActionContainerWidgetClass;
 protected:
 	virtual void BeginPlay() override;
 
@@ -77,13 +80,19 @@ public:
 	void End_Roll();
 	void End_BackStep();	// 거의 notify 호출 
 
+	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	// IICharacter을(를) 통해 상속됨
 	virtual void Hitted() override;
 	virtual void Dead() override;
-
-	// IICharacter을(를) 통해 상속됨
+	virtual void End_Dead() override;
 	virtual void ChangeColor(FLinearColor InColor);
 private:
 	UFUNCTION()
 		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);	
 	// CStateComponent에 OnStateTypeChanged에 바인딩
+	float DamageValue;
+	AActor* Causer;
+	ACharacter* Attacker;
+
+	class UCUserWidget_ActionContainer* ActionContainerWidget;
 };

@@ -123,6 +123,8 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 
 	CLog::Print(DamageValue, -1, 1);
 
+	Action->AbortByDamaged();
+
 	Status->DecreaseHealth(this->DamageValue);
 	if (Status->GetHealth() <= 0.f) {
 		State->SetDeadMode();
@@ -153,7 +155,7 @@ void ACEnemy::Hitted()
 
 	// Play Hit Montage
 	Montages->PlayHitted();
-
+	Status->SetMove();	// 맞고나서 안움직이는 경우가 있음.
 	// Launch HitBack
 	FVector start = GetActorLocation();	// 나의 위치
 	FVector target = Causer->GetActorLocation();	// 공격한 물체의 위치	(TakeDamage) 에서 받아왔음

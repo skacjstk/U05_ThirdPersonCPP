@@ -25,10 +25,11 @@ public:
 private:
 	UFUNCTION()
 		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);
-	void Hitted() override;
-	void Dead() override;
+	virtual void Hitted() override;
+	virtual void Dead() override;
+
 	UFUNCTION()
-		void End_Dead();
+		 virtual void End_Dead() override;
 	UFUNCTION()
 		void RestoreLogoColor();
 protected:

@@ -160,3 +160,14 @@ void UCActionComponent::OffAllCollisions()
 		data->GetAttachment()->OffCollisions();
 	}
 }
+
+void UCActionComponent::AbortByDamaged()
+{
+	CheckNull(DataObjects[(int32)Type]);
+	CheckTrue(IsUnarmedMode());
+
+	DataObjects[(int32)Type]->GetEquipment()->Begin_Equip();
+	DataObjects[(int32)Type]->GetEquipment()->End_Equip();	// Idle로 돌려주는 코드
+
+	DataObjects[(int32)Type]->GetDoAction()->Abort();
+}

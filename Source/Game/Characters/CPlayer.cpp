@@ -8,9 +8,11 @@
 #include "Components/CActionComponent.h"
 #include "Actions/CActionData.h"
 #include "Actions/CEquipment.h"
+#include "Widgets/CUserWidget_ActionContainer.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "Components/CapsuleComponent.h"
 
 ACPlayer::ACPlayer()
 {
@@ -55,6 +57,8 @@ ACPlayer::ACPlayer()
 	GetCharacterMovement()->RotationRate = FRotator(0, 720, 0);
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
+	// ActionWidget
+	CHelpers::GetClass<UCUserWidget_ActionContainer>(&ActionContainerWidgetClass, "/Game/Widgets/WB_ActionContainer");
 }
 
 void ACPlayer::BeginPlay()
@@ -78,8 +82,9 @@ void ACPlayer::BeginPlay()
 
 	Action->SetUnarmedMode();
 
-
-
+	// ActionWidget Create
+	ActionContainerWidget = CreateWidget<UCUserWidget_ActionContainer, APlayerController>(GetController<APlayerController>(), ActionContainerWidgetClass);
+	ActionContainerWidget->AddToViewport();
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -264,12 +269,52 @@ void ACPlayer::End_BackStep()
 	GetCharacterMovement()->bOrientRotationToMovement = !lookForward;
 }
 
-void ACPlayer::Hitted()
+float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	this->DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	Causer = DamageCauser;
+	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
+
+	CLog::Print(DamageValue, -1, 1);
+
+	Action->AbortByDamaged();
+
+	Status->DecreaseHealth(this->DamageValue);
+	if (Status->GetHealth() <= 0.f) {
+		State->SetDeadMode();
+		return this->DamageValue;
+	}
+	State->SetHittedMode();
+	return this->DamageValue;
+}
+
+void ACPlayer::Hitted()
+{	
+
+	Montages->PlayHitted();
+	Status->SetMove();	// 맞고나서 안움직이는 경우가 있음.
 }
 
 void ACPlayer::Dead()
 {
+	CheckFalse(State->IsDeadMode());
+
+	// All Weapon Collision Disable
+	Action->Dead();
+
+	// Montage 재생
+	Montages->PlayDead();	
+
+	// End_Dead는 노티파이 재생
+	GetCapsuleComponent()->SetCollisionProfileName("Spectator");
+}
+
+void ACPlayer::End_Dead()
+{
+	Action->End_Dead();
+	
+	UKismetSystemLibrary::QuitGame(GetWorld(), GetController<APlayerController>(), EQuitPreference::Quit, false);
+
 }
 
 void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
@@ -278,6 +323,8 @@ void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 	{
 	case EStateType::Roll:			Begin_Roll();			break;
 	case EStateType::BackStep:		Begin_BackStep();		break;
+	case EStateType::Hitted:		Hitted();	break;
+	case EStateType::Dead:			Dead();		break;
 	default:
 		break;
 	}
