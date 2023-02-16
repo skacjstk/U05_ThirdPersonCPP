@@ -8,14 +8,22 @@ void UCUserWidget_ActionContainer::NativeConstruct()
 {
 	TArray<UWidget*> children = Grid->GetAllChildren();
 	for (UWidget* child : children)
-	{
 		Items.Add(child->GetName(), Cast<UCUserWidget_ActionItem>(child));
 
-	}
+	Super::NativeConstruct();
 }
 
 void UCUserWidget_ActionContainer::Pressed(FString InName)
 {
+	if (Items[InName]->OnActionItemSelected.IsBound())
+		Items[InName]->OnActionItemSelected.Broadcast();
+
+	SetVisibility(ESlateVisibility::Hidden);
+
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->bShowMouseCursor = false;
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetInputMode(FInputModeGameOnly());
+
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 }
 
 void UCUserWidget_ActionContainer::Hover(FString InName)
@@ -31,4 +39,3 @@ void UCUserWidget_ActionContainer::Unhover(FString InName)
 	if (!!border)
 		border->SetBrushColor(FLinearColor::White);
 }
-

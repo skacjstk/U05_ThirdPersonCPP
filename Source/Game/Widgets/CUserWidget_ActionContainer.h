@@ -12,11 +12,13 @@ public:
 	void Pressed(FString InName);
 	void Hover(FString InName);
 	void Unhover(FString InName);
+public:
+	FORCEINLINE class UCUserWidget_ActionItem* GetItem(FString InName) { return Items[InName]; }
 
 protected:
 	virtual void NativeConstruct() override;
 protected:
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 		class UGridPanel* Grid;
 	UPROPERTY(BlueprintReadOnly)
 		TMap<FString, class UCUserWidget_ActionItem*> Items;

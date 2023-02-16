@@ -9,6 +9,7 @@
 #include "Actions/CActionData.h"
 #include "Actions/CEquipment.h"
 #include "Widgets/CUserWidget_ActionContainer.h"
+#include "Widgets/CUserWidget_ActionItem.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include "Materials/MaterialInstanceDynamic.h"
@@ -85,6 +86,19 @@ void ACPlayer::BeginPlay()
 	// ActionWidget Create
 	ActionContainerWidget = CreateWidget<UCUserWidget_ActionContainer, APlayerController>(GetController<APlayerController>(), ActionContainerWidgetClass);
 	ActionContainerWidget->AddToViewport();
+	ActionContainerWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	BindActionItem();
+}
+
+void ACPlayer::BindActionItem()
+{
+	ActionContainerWidget->GetItem("Item1")->OnActionItemSelected.AddDynamic(this, &ACPlayer::OnFist);
+	ActionContainerWidget->GetItem("Item2")->OnActionItemSelected.AddDynamic(this, &ACPlayer::OnOneHand);
+	ActionContainerWidget->GetItem("Item3")->OnActionItemSelected.AddDynamic(this, &ACPlayer::OnTwoHand);
+	ActionContainerWidget->GetItem("Item4")->OnActionItemSelected.AddDynamic(this, &ACPlayer::OnWarp);
+	ActionContainerWidget->GetItem("Item5")->OnActionItemSelected.AddDynamic(this, &ACPlayer::OnMagicBall);
+	ActionContainerWidget->GetItem("Item6")->OnActionItemSelected.AddDynamic(this, &ACPlayer::OnStorm);
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -112,11 +126,15 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("TwoHand", EInputEvent::IE_Pressed, this, &ACPlayer::OnTwoHand);
 	PlayerInputComponent->BindAction("MagicBall", EInputEvent::IE_Pressed, this, &ACPlayer::OnMagicBall);
 	PlayerInputComponent->BindAction("Warp", EInputEvent::IE_Pressed, this, &ACPlayer::OnWarp);
+	PlayerInputComponent->BindAction("Storm", EInputEvent::IE_Pressed, this, &ACPlayer::OnStorm);
 
 	PlayerInputComponent->BindAction("Action", EInputEvent::IE_Pressed, this, &ACPlayer::OnDoAction);
 
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Pressed, this, &ACPlayer::OnAim);
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Released, this, &ACPlayer::OffAim);
+
+	PlayerInputComponent->BindAction("ActionSwitch", EInputEvent::IE_Pressed, this, &ACPlayer::OnActionSwitch);
+	PlayerInputComponent->BindAction("ActionSwitch", EInputEvent::IE_Released, this, &ACPlayer::OffActionSwitch);
 
 }
 
@@ -216,6 +234,11 @@ void ACPlayer::OnWarp()
 	CheckFalse(State->IsIdleMode());
 	Action->SetWarpMode();
 }
+UFUNCTION() void ACPlayer::OnStorm()
+{
+	CheckFalse(State->IsIdleMode());
+	Action->SetStormMode();
+}
 void ACPlayer::OnDoAction()
 {
 	Action->DoAction();
@@ -229,6 +252,23 @@ void ACPlayer::OnAim()
 void ACPlayer::OffAim()
 {
 	Action->DoOffAim();
+}
+void ACPlayer::OnActionSwitch()
+{
+	CheckFalse(State->IsIdleMode());
+	ActionContainerWidget->SetVisibility(ESlateVisibility::Visible);
+	GetController<APlayerController>()->bShowMouseCursor = true;
+	GetController<APlayerController>()->SetInputMode(FInputModeGameAndUI());
+
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.1f);
+}
+void ACPlayer::OffActionSwitch()
+{
+	ActionContainerWidget->SetVisibility(ESlateVisibility::Hidden);
+	GetController<APlayerController>()->bShowMouseCursor = false;
+	GetController<APlayerController>()->SetInputMode(FInputModeGameOnly());
+
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 }
 
 void ACPlayer::Begin_Roll()

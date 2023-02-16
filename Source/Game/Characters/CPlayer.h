@@ -51,6 +51,7 @@ public:
 	FGenericTeamId GetGenericTeamId() const override;	// Interface 재정의 
 
 private:
+	void BindActionItem();
 	//Axis Mapping
 	void OnMoveForward(float InAxis);
 	void OnMoveRight(float InAxis);
@@ -63,16 +64,22 @@ private:
 	void OnWalk();
 	void OffWalk();
 
-	void OnFist();
-	void OnOneHand();
-	void OnTwoHand();
-	void OnMagicBall();
-	void OnWarp();
+	
+	UFUNCTION()	void OnFist();
+	UFUNCTION()	void OnOneHand();
+	UFUNCTION()	void OnTwoHand();
+	UFUNCTION()	void OnMagicBall();
+	UFUNCTION()	void OnWarp();
+	UFUNCTION()	void OnStorm();
 
 	void OnDoAction();
 
 	void OnAim();	// 우클릭
 	void OffAim();
+
+	void OnActionSwitch();
+	void OffActionSwitch();
+
 private:
 	void Begin_Roll();
 	void Begin_BackStep();
