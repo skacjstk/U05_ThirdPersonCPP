@@ -4,6 +4,7 @@
 #include "Components/CStateComponent.h"
 #include "Components/CMontagesComponent.h"
 #include "Components/CActionComponent.h"
+#include "Components/CDissolveComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Widgets/CUserWidget_Name.h"
@@ -24,6 +25,7 @@ ACEnemy::ACEnemy()
 	CHelpers::CreateActorComponent(this, &Montages, "Montages");
 	CHelpers::CreateActorComponent(this, &Status, "Status");
 	CHelpers::CreateActorComponent(this, &State, "State");
+	CHelpers::CreateActorComponent(this, &Dissolve, "Dissolve");
 
 	//Component Settings
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
@@ -121,9 +123,11 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 	Causer = DamageCauser;
 	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
 
-	CLog::Print(DamageValue, -1, 1);
+//	CLog::Print(DamageValue, -1, 1);
 
 	Action->AbortByDamaged();
+
+	CheckTrueResult(State->IsDeadMode(), this->DamageValue);	// 죽어있으면 TakeDamage에서 거름.
 
 	Status->DecreaseHealth(this->DamageValue);
 	if (Status->GetHealth() <= 0.f) {
@@ -177,7 +181,10 @@ void ACEnemy::Dead()
 	// All Weapon Collision Disable
 	Action->Dead();
 
-	// Ragdoll
+	//Dissolve 효과 Play
+	Dissolve->Play();
+
+	// Ragdoll LaunchChar ( AddForce)
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->GlobalAnimRateScale = 0.f;
 	GetMesh()->SetSimulatePhysics(true);
@@ -199,12 +206,17 @@ void ACEnemy::Dead()
 
 void ACEnemy::End_Dead()
 {
+	//Dissolve 효과 Stop
+	Dissolve->Stop();
+
 	Action->End_Dead();
 	Destroy();
 }
 
 void ACEnemy::RestoreLogoColor()
 {
+	CheckTrue(State->IsDeadMode());
+
 	FLinearColor color = Action->GetCurrent()->GetEquipmentColor();
 	LogoMaterial->SetVectorParameterValue("LogoLightColor", color);
 	LogoMaterial->SetScalarParameterValue("IsHitted", 0);

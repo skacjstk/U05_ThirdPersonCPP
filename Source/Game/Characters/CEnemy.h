@@ -53,6 +53,9 @@ private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCStatusComponent* Status;
 
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCDissolveComponent* Dissolve;
+
 private:
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;
@@ -60,7 +63,7 @@ private:
 	UPROPERTY(EditAnywhere)
 		ESlateVisibility VisibleType = ESlateVisibility::Hidden;
 	UPROPERTY(EditAnywhere)
-		float DeadLaunchValue = 10000000.f;
+		float DeadLaunchValue = 100000.f;
 	UPROPERTY(EditAnywhere)
 		float LaunchValue = 25.f;	// 밀려나는 고유값
 	float DamageValue;
