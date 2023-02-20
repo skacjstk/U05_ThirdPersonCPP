@@ -6,6 +6,8 @@
 #include "Components/COptionComponent.h"
 #include "Components/CMontagesComponent.h"
 #include "Components/CActionComponent.h"
+#include "Components/CFootComponent.h"
+
 #include "Actions/CActionData.h"
 #include "Actions/CEquipment.h"
 #include "Widgets/CUserWidget_ActionContainer.h"
@@ -29,6 +31,7 @@ ACPlayer::ACPlayer()
 	CHelpers::CreateActorComponent(this, &Status, "Status");
 	CHelpers::CreateActorComponent(this, &Option, "Option");
 	CHelpers::CreateActorComponent(this, &State, "State");
+	CHelpers::CreateActorComponent(this, &Foot, "Foot");		// IK 용 Foot 컴포넌트
 
 	// Component Settings
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));

@@ -34,6 +34,8 @@ private:
 	class UCMontagesComponent* Montages;
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCActionComponent* Action;
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCFootComponent* Foot;
 
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;
