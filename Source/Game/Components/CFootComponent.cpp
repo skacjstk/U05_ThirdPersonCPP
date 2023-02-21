@@ -3,6 +3,7 @@
 #include "GameFramework/Character.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Engine/TriggerVolume.h"
 
 // Sets default values for this component's properties
 UCFootComponent::UCFootComponent()
@@ -22,12 +23,25 @@ void UCFootComponent::BeginPlay()
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
 	CapsuleHalfHeight = OwnerCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 	StepHeight = OwnerCharacter->GetCharacterMovement()->MaxStepHeight;
+
+	TArray<AActor*> actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATriggerVolume::StaticClass(), actors);
+	CheckTrue(actors.Num() <= 0);
+
+	for (auto* actor : actors)
+	{
+		actor->OnActorBeginOverlap.AddDynamic(this, &UCFootComponent::OnActorBeginOverlap);
+		actor->OnActorEndOverlap.AddDynamic(this, &UCFootComponent::OnActorEndOverlap);
+	}
+
 }
 
 
 void UCFootComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	CheckFalse(bActive);
 
 	float leftDistance;
 	FRotator leftRotation;
@@ -38,8 +52,6 @@ void UCFootComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 	// 로컬 공간 ( 위아래가 X임 )
 
-
-
 	float offset = FMath::Min(leftDistance, rightDistance);	// 둘중 누가 떠있는놈인지 저장
 	Data.LeftDistance.X = UKismetMathLibrary::FInterpTo(Data.LeftDistance.X, leftDistance - offset, DeltaTime, InterpSpeed);	// 로컬공간에선 x가 위아래라서, X를 기준삼는다.
 	//F는 벡터 전용, R 은 회전 전용
@@ -48,32 +60,24 @@ void UCFootComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	// World 공간 ( Z축을 사용하면 된다 ) // AddTransform 사용할 것
 	Data.PelvisDistance.Z = UKismetMathLibrary::FInterpTo(Data.PelvisDistance.Z, offset, DeltaTime, InterpSpeed);	// World 니까 자신을 뺄 필요가 없지
 
-	Data.LeftRotation = leftRotation;
-	Data.RightRotation = rightRotation;
+	Data.LeftRotation =   UKismetMathLibrary::RInterpTo(Data.LeftRotation, leftRotation, DeltaTime, InterpSpeed);
+	Data.RightRotation =  UKismetMathLibrary::RInterpTo(Data.RightRotation, rightRotation, DeltaTime, InterpSpeed);
 
 	// 레그 IK에 사용할 알파 값
-	// StepHeight 가져오기는 BeginPlay에 있음.
-
-
-
-
-	
+	// StepHeight 가져오기는 BeginPlay에 있음.		
 	if (!FMath::IsNearlyZero(leftDistance, rightDistance))
 	{
 		if (leftDistance > rightDistance)
 		{
-			Data.LeftAlpha = Data.LeftDistance.X / StepHeight;
-			Data.RightAlpha = -(Data.RightDistance.X + OffsetDistance) / StepHeight;
+			Data.LeftAlpha = (Data.LeftDistance.X + OffsetDistance) / StepHeight;
+			Data.RightAlpha = -Data.RightDistance.X / StepHeight;
 		}
 		else
 		{
-			Data.LeftAlpha = (Data.LeftDistance.X - OffsetDistance) / StepHeight;
-			Data.RightAlpha = -Data.RightDistance.X / StepHeight;
+			Data.LeftAlpha = Data.LeftDistance.X / StepHeight;
+			Data.RightAlpha = -(Data.RightDistance.X - OffsetDistance) / StepHeight;
 		}
 	}
-
-
-
 }
 
 void UCFootComponent::Trace(FName& InSocketName, float& OutDistance, FRotator& OutRotation)
@@ -114,5 +118,20 @@ void UCFootComponent::Trace(FName& InSocketName, float& OutDistance, FRotator& O
 	OutRotation.Roll = UKismetMathLibrary::DegAtan2(hitResult.ImpactNormal.Y, hitResult.ImpactNormal.Z);
 	OutRotation.Pitch = -UKismetMathLibrary::DegAtan2(hitResult.ImpactNormal.X, hitResult.ImpactNormal.Z);
 
+	FMath::Clamp(OutRotation.Roll, -15.f, 15.f);
+	FMath::Clamp(OutRotation.Pitch, -30.f, 30.f);
+
+}
+
+void UCFootComponent::OnActorEndOverlap(AActor* overlappedActor, AActor* OtherActor)
+{
+	CheckNull(Cast<ACharacter>(OtherActor));
+	bActive = false;
+}
+
+void UCFootComponent::OnActorBeginOverlap(AActor* overlappedActor, AActor* OtherActor)
+{
+	CheckNull(Cast<ACharacter>(OtherActor));
+	bActive = true;
 }
 

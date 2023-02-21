@@ -40,6 +40,7 @@ public:
 	UCFootComponent();
 	
 	FORCEINLINE const FFootData& GetData() { return Data; }
+	FORCEINLINE bool IsIK() { return bActive; }
 
 protected:
 	// Called when the game starts
@@ -52,6 +53,10 @@ public:
 private:
 	void Trace(FName& InSocketName, float& OutDistance, FRotator& OutRotation);	// 발이 얼마만큼 떨어져 있는지 
 		
+	UFUNCTION()
+		void OnActorBeginOverlap(AActor* overlappedActor, AActor* OtherActor);
+	UFUNCTION()
+		void OnActorEndOverlap(AActor* overlappedActor, AActor* OtherActor);
 	// 소켓 이름 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "IK")
@@ -71,5 +76,5 @@ private:
 	float CapsuleHalfHeight;
 	float StepHeight;
 	FFootData Data;
-
+	bool bActive = false;
 };
